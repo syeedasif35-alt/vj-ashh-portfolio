@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VJ Ashh - Live Visual Artist & Stage Design Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#07090e',
+                            800: '#0c1017',
+                            700: '#131924',
+                            600: '#1e2738'
+                        },
+                        cyan: {
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                            600: '#0891b2'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Outfit', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #07090e;
+            color: #f1f5f9;
+            overflow-x: hidden;
+            user-select: none;
+        }
+        .font-display {
+            font-family: 'Outfit', sans-serif;
+        }
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: scale(0.98) translateY(10px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 6rem 1.25rem 7rem 1.25rem;
+        }
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+        .glow-effect {
+            box-shadow: 0 0 50px -10px rgba(6, 182, 212, 0.15);
+        }
+        .glow-border {
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.05), 0 0 25px -5px rgba(34, 211, 238, 0.1);
+        }
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(34, 211, 238, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.25);
+        }
+        canvas#gemini-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0c1017;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e2738;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0891b2;
+        }
+    </style>
+</head>
+<body class="bg-dark-950 text-slate-100 min-h-screen w-full flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
+
+    <canvas id="gemini-canvas"></canvas>
+
+    <!-- Ambient Glow Backdrop Elements -->
+    <div class="fixed top-[-20%] left-[20%] w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[140px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-[-20%] right-[10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none z-0"></div>
+
+    <!-- Top Header Navigation / Brand -->
+    <header class="fixed top-0 left-0 right-0 z-30 w-full px-6 md:px-8 py-4 bg-dark-900/90 backdrop-blur-md border-b border-slate-800/80 flex justify-between items-center max-w-7xl mx-auto">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 overflow-hidden text-dark-900 font-bold">
+                <i data-lucide="activity" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <span class="font-display font-bold tracking-wider text-base md:text-lg bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">VJ ASHH</span>
+                <span class="block text-[10px] uppercase tracking-widest text-cyan-400 font-semibold">Portfolio & Rate Card 2026-27</span>
+            </div>
+        </div>
+        <div class="hidden md:flex items-center space-x-6 text-xs text-slate-400 font-medium">
+            <span class="flex items-center space-x-1"><i data-lucide="command" class="w-3.5 h-3.5 text-cyan-400"></i><span>Use ← → Arrow Keys to Navigate</span></span>
+            <div id="slide-counter-top" class="px-3 py-1 rounded-full bg-dark-800/80 border border-slate-800 text-cyan-400">Slide 1 / 7</div>
+        </div>
+    </header>
+
+    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto">
+
+        <!-- SLIDE 1: Title Slide -->
+        <section id="slide-1" class="slide active w-full max-w-5xl mx-auto text-center flex flex-col items-center justify-center min-h-full">
+            <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-dark-800/90 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-6 shadow-lg shadow-cyan-500/10 backdrop-blur-md animate-pulse">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span>Immersive Visual Experiences & Stage Design</span>
+            </div>
+            
+            <h1 class="font-display font-extrabold text-4xl sm:text-5xl md:text-7xl lg:text-8xl tracking-tight mb-6 bg-gradient-to-b from-white via-slate-100 to-slate-400 bg-clip-text text-transparent leading-[1.1]">
+                Live Visual Artist <br><span class="bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 bg-clip-text text-transparent">& Stage Design</span>
+            </h1>
+
+            <p class="text-slate-400 text-base md:text-xl max-w-2xl font-light mb-10 leading-relaxed px-4">
+                Pushing boundaries in real-time generative graphics, custom stage mapping, and high-octane concert & corporate visuals.
+            </p>
+
+            <div class="flex flex-wrap items-center justify-center gap-4">
+                <button onclick="nextSlide()" class="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-dark-900 font-display font-bold text-sm tracking-wide shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 flex items-center space-x-2">
+                    <span>Explore Portfolio & Rates</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+                <a href="#contact" onclick="goToSlide(7)" class="px-8 py-4 rounded-xl bg-dark-800/80 border border-slate-700/80 hover:border-cyan-500/50 text-slate-200 font-display font-semibold text-sm tracking-wide backdrop-blur-md transition-all duration-300 flex items-center space-x-2">
+                    <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i>
+                    <span>Book Consultation</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: Core VJ Capabilities -->
+        <section id="slide-2" class="slide w-full max-w-6xl mx-auto flex flex-col items-center">
+            <div class="text-center mb-10 w-full">
+                <span class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2 block">Expertise & Specializations</span>
+                <h2 class="font-display font-bold text-3xl md:text-5xl text-white">Core VJ Capabilities</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                <!-- Capability 1 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 card-hover backdrop-blur-xl flex flex-col justify-between group">
+                    <div>
+                        <div class="w-14 h-14 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="briefcase" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-white mb-3">Corporate Events</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Sleek branding loops, dynamic keynote backdrops, kinetic motion graphics, and seamless multi-screen LED mapping for product launches & summits.
+                        </p>
+                    </div>
+                    <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
+                        <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Logo & Brand Guidelines Sync</span></li>
+                        <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Seamless Cue-to-Cue Operation</span></li>
+                    </ul>
+                </div>
+
+                <!-- Capability 2 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 card-hover backdrop-blur-xl flex flex-col justify-between group">
+                    <div>
+                        <div class="w-14 h-14 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="music" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-white mb-3">Concerts & Club Sets</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Audio-reactive real-time visuals, custom cyberpunk aesthetics, high-energy festival stage designs, and timecode sync for touring artists.
+                        </p>
+                    </div>
+                    <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
+                        <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Real-Time MIDI & Audio Reactivity</span></li>
+                        <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Custom Festival Package Generation</span></li>
+                    </ul>
+                </div>
+
+                <!-- Capability 3 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 card-hover backdrop-blur-xl flex flex-col justify-between group">
+                    <div>
+                        <div class="w-14 h-14 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="heart" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-white mb-3">Sangeet & Weddings</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Immersive thematic environments, royal palace projections, dynamic DJ stage visuals, and personalized couple monogram animations.
+                        </p>
+                    </div>
+                    <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
+                        <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Custom Monograms & Intro Stings</span></li>
+                        <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Cultural & Bollywood Theme Packs</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: Live Work & Stage Gallery -->
+        <section id="slide-3" class="slide w-full max-w-6xl mx-auto flex flex-col items-center">
+            <div class="text-center mb-10 w-full">
+                <span class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2 block">Live Set & Stage Design Archive</span>
+                <h2 class="font-display font-bold text-3xl md:text-5xl text-white">Featured Portfolio Gallery</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                <!-- Gallery Item 1 -->
+                <div class="rounded-2xl bg-dark-800/80 border border-slate-800 overflow-hidden card-hover group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="IMG20261004180944.jpg" alt="Outdoor Festival VJ Rig" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent opacity-80"></div>
+                        <span class="absolute bottom-3 left-3 px-2.5 py-1 rounded-md bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-[10px] font-semibold backdrop-blur-md">Outdoor Festival Stage</span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-display font-bold text-white text-base mb-1">Resolume Arena Live Set</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Real-time layer management and visual mapping during live daytime and evening festival sets[cite: 13].</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 2 -->
+                <div class="rounded-2xl bg-dark-800/80 border border-slate-800 overflow-hidden card-hover group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="IMG20260920192320.jpg" alt="Phoenix Marketcity Stage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent opacity-80"></div>
+                        <span class="absolute bottom-3 left-3 px-2.5 py-1 rounded-md bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-[10px] font-semibold backdrop-blur-md">Phoenix Marketcity Gig</span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-display font-bold text-white text-base mb-1">Concert Lighting & LED Integration</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Synchronized high-end live visual mixing and multi-console coordination[cite: 20].</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 3 -->
+                <div class="rounded-2xl bg-dark-800/80 border border-slate-800 overflow-hidden card-hover group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="IMG20261008161228.jpg" alt="Sanskruti Employee Event" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent opacity-80"></div>
+                        <span class="absolute bottom-3 left-3 px-2.5 py-1 rounded-md bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-[10px] font-semibold backdrop-blur-md">Sanskruti Gala Setup</span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-display font-bold text-white text-base mb-1">Indoor Corporate Event VJing</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Thematic stage presentations and side-screen branding layouts[cite: 15].</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 4 -->
+                <div class="rounded-2xl bg-dark-800/80 border border-slate-800 overflow-hidden card-hover group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="IMG20260919123314.jpg" alt="Rozgar Mela Government Event" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent opacity-80"></div>
+                        <span class="absolute bottom-3 left-3 px-2.5 py-1 rounded-md bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-[10px] font-semibold backdrop-blur-md">Rozgar Mela Event</span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-display font-bold text-white text-base mb-1">Live Broadcast & Multi-Screen Feed</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Managing live video feeds and official presentation backdrops for high-scale official summits[cite: 18].</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 5 -->
+                <div class="rounded-2xl bg-dark-800/80 border border-slate-800 overflow-hidden card-hover group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="IMG20260928172505.jpg" alt="Stars & Superstars Event" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent opacity-80"></div>
+                        <span class="absolute bottom-3 left-3 px-2.5 py-1 rounded-md bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-[10px] font-semibold backdrop-blur-md">Stars & Superstars</span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-display font-bold text-white text-base mb-1">Dynamic Lighting & Stage Graphics</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Custom animated award graphics and dramatic beam light pairing[cite: 21].</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 6 -->
+                <div class="rounded-2xl bg-dark-800/80 border border-slate-800 overflow-hidden card-hover group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="IMG_0782.JPG.jpg" alt="Google Elevate Stage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent opacity-80"></div>
+                        <span class="absolute bottom-3 left-3 px-2.5 py-1 rounded-md bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-[10px] font-semibold backdrop-blur-md">Google Elevate</span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-display font-bold text-white text-base mb-1">Circular LED & Curved Displays</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Specialized mapping for intricate circular truss structures and curved video walls[cite: 2].</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Corporate & Concert Packages -->
+        <section id="slide-4" class="slide w-full max-w-6xl mx-auto flex flex-col items-center">
+            <div class="text-center mb-10 w-full">
+                <span class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2 block">Investment Tiers</span>
+                <h2 class="font-display font-bold text-3xl md:text-5xl text-white">Corporate & Concert Packages</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                <!-- Package 1 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 card-hover backdrop-blur-xl flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Standard Rate</div>
+                        <h3 class="font-display font-bold text-2xl text-white mb-2">Half Day Corporate</h3>
+                        <div class="text-3xl font-extrabold text-cyan-400 mb-6">₹25,000</div>
+                        <p class="text-slate-400 text-sm mb-6">Ideal for half-day conferences, corporate annual meetings, and product showcases.</p>
+                        <ul class="space-y-3 text-xs text-slate-300">
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Up to 4 Hours On-Site VJing</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Basic Branding & Logo Stings</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>1 Dedicated VJ Operator</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Standard Resolution Outputs</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="goToSlide(7)" class="mt-8 w-full py-3 rounded-xl bg-dark-700 hover:bg-cyan-500 hover:text-dark-900 transition-colors font-display font-semibold text-xs tracking-wider uppercase border border-slate-700">Select Package</button>
+                </div>
+
+                <!-- Package 2 (Featured) -->
+                <div class="p-8 rounded-2xl bg-gradient-to-b from-dark-800 to-dark-700/80 glow-border card-hover backdrop-blur-xl flex flex-col justify-between relative">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-cyan-500 text-dark-900 text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">Most Popular</div>
+                    <div>
+                        <div class="text-xs uppercase tracking-wider text-cyan-400 font-semibold mb-2">Professional Grade</div>
+                        <h3 class="font-display font-bold text-2xl text-white mb-2">Full Day Corporate</h3>
+                        <div class="text-3xl font-extrabold text-cyan-400 mb-6">₹40,000</div>
+                        <p class="text-slate-300 text-sm mb-6">Comprehensive visual management for all-day summits, awards galas, and expos.</p>
+                        <ul class="space-y-3 text-xs text-slate-200">
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Up to 8 Hours On-Site VJing</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Custom Motion Backgrounds</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Multi-Screen LED Mapping</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>On-site Tech Rehearsal Support</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="goToSlide(7)" class="mt-8 w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-dark-900 transition-colors font-display font-bold text-xs tracking-wider uppercase shadow-lg shadow-cyan-500/20">Select Package</button>
+                </div>
+
+                <!-- Package 3 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 card-hover backdrop-blur-xl flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Elite Touring</div>
+                        <h3 class="font-display font-bold text-2xl text-white mb-2">Musical Concert</h3>
+                        <div class="text-3xl font-extrabold text-cyan-400 mb-6">₹50,000</div>
+                        <p class="text-slate-400 text-sm mb-6">High-octane live musical performances, gigs, and club festival takeovers.</p>
+                        <ul class="space-y-3 text-xs text-slate-300">
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Full Show Audio-Reactive Set</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Timecode / MIDI Synchronization</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Custom Artist Visual Branding</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span>Advanced Resolume Arena Setup</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="goToSlide(7)" class="mt-8 w-full py-3 rounded-xl bg-dark-700 hover:bg-cyan-500 hover:text-dark-900 transition-colors font-display font-semibold text-xs tracking-wider uppercase border border-slate-700">Select Package</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: DJ & Sangeet Packages -->
+        <section id="slide-5" class="slide w-full max-w-6xl mx-auto flex flex-col items-center">
+            <div class="text-center mb-10 w-full">
+                <span class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2 block">Specialized Entertainment</span>
+                <h2 class="font-display font-bold text-3xl md:text-5xl text-white">DJ & Sangeet Packages</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                <!-- Package 1 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 card-hover backdrop-blur-xl flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6">
+                            <i data-lucide="disc" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-white mb-2">Only DJ Visuals</h3>
+                        <div class="text-3xl font-extrabold text-cyan-400 mb-6">₹20,000</div>
+                        <p class="text-slate-400 text-sm mb-6">Club-ready looping graphics, laser simulations, and beat-matched VJ sets tailored for guest DJs.</p>
+                        <ul class="space-y-2 text-xs text-slate-300">
+                            <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Beat-Synced Loops</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Live Audio Triggering</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="goToSlide(7)" class="mt-8 w-full py-3 rounded-xl bg-dark-700 hover:bg-cyan-500 hover:text-dark-900 transition-colors font-display font-semibold text-xs tracking-wider uppercase border border-slate-700">Book Now</button>
+                </div>
+
+                <!-- Package 2 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 card-hover backdrop-blur-xl flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6">
+                            <i data-lucide="sparkles" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-white mb-2">Only Sangeet</h3>
+                        <div class="text-3xl font-extrabold text-cyan-400 mb-6">₹30,000</div>
+                        <p class="text-slate-400 text-sm mb-6">Thematic stage visuals, royal backgrounds, and choreography-synced visuals for family performances.</p>
+                        <ul class="space-y-2 text-xs text-slate-300">
+                            <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Custom Couple Intros</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Choreography Cueing</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="goToSlide(7)" class="mt-8 w-full py-3 rounded-xl bg-dark-700 hover:bg-cyan-500 hover:text-dark-900 transition-colors font-display font-semibold text-xs tracking-wider uppercase border border-slate-700">Book Now</button>
+                </div>
+
+                <!-- Package 3 (Featured Combo) -->
+                <div class="p-8 rounded-2xl bg-gradient-to-b from-dark-800 to-dark-700/80 glow-border card-hover backdrop-blur-xl flex flex-col justify-between relative">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-cyan-500 text-dark-900 text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">Ultimate Combo</div>
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 mb-6">
+                            <i data-lucide="star" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-white mb-2">Sangeet & DJ</h3>
+                        <div class="text-3xl font-extrabold text-cyan-400 mb-6">₹50,000</div>
+                        <p class="text-slate-300 text-sm mb-6">The complete wedding entertainment package covering both the ceremonial Sangeet night and after-party DJ set.</p>
+                        <ul class="space-y-2 text-xs text-slate-200">
+                            <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Full Day / Night Coverage</span></li>
+                            <li class="flex items-center space-x-2"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i><span>Dedicated VJ & Content Director</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="goToSlide(7)" class="mt-8 w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-dark-900 transition-colors font-display font-bold text-xs tracking-wider uppercase shadow-lg shadow-cyan-500/20">Book Combo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Technical Rider & Add-ons -->
+        <section id="slide-6" class="slide w-full max-w-6xl mx-auto flex flex-col items-center">
+            <div class="text-center mb-10 w-full">
+                <span class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2 block">Specifications & Workflow</span>
+                <h2 class="font-display font-bold text-3xl md:text-5xl text-white">Technical Rider & Add-ons</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                <!-- Column 1 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 backdrop-blur-xl">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                            <i data-lucide="cpu" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-lg text-white">Hardware & Software</h3>
+                    </div>
+                    <ul class="space-y-4 text-xs text-slate-300">
+                        <li class="flex items-start space-x-2">
+                            <i data-lucide="terminal" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0"></i>
+                            <span>Alienware & Custom high-end PCs running Resolume Arena 7.</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i data-lucide="terminal" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0"></i>
+                            <span>NovaStar 4K Prime, Pixelhue P10 switchers & capture cards.</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i data-lucide="terminal" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0"></i>
+                            <span>MIDI Controllers & professional USB-C multi-outputs.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 backdrop-blur-xl">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                            <i data-lucide="wand-2" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-lg text-white">Custom Content Creation</h3>
+                    </div>
+                    <ul class="space-y-4 text-xs text-slate-300">
+                        <li class="flex items-start space-x-2">
+                            <i data-lucide="sparkle" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0"></i>
+                            <span>Tailored 3D motion loops, logo animations, and generative visual packs.</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i data-lucide="sparkle" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0"></i>
+                            <span>Blender & After Effects custom asset development.</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i data-lucide="sparkle" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0"></i>
+                            <span>Advanced color grading to match venue lighting themes.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 3 -->
+                <div class="p-8 rounded-2xl bg-dark-800/60 border border-slate-800 backdrop-blur-xl">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                            <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-lg text-white">Mapping & Outputs</h3>
+                    </div>
+                    <ul class="space-y-4 text-xs text-slate-300">
+                        <li class="flex items-start space-x-2">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0"></i>
+                            <span>Advanced LED wall slicing, multi-display stitching & pixel mapping.</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0"></i>
+                            <span>Projection mapping on complex stage structures and props.</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0"></i>
+                            <span>Low latency NDI and SDI redundancy workflows.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: Closing / Contact Slide -->
+        <section id="slide-7" class="slide w-full max-w-4xl mx-auto text-center flex flex-col items-center justify-center min-h-full">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-2xl shadow-cyan-500/30 mb-8">
+                <i data-lucide="send" class="w-8 h-8 text-dark-900"></i>
+            </div>
+
+            <h2 class="font-display font-extrabold text-3xl sm:text-4xl md:text-6xl text-white mb-4 tracking-tight">Ready to Elevate Your Stage?</h2>
+            <p class="text-slate-400 text-base md:text-lg mb-8 max-w-xl px-4">Book your dates early for the 2026-27 concert & wedding season. Let's create something unforgettable.</p>
+
+            <div class="p-6 rounded-2xl bg-dark-800/80 border border-cyan-500/30 glow-effect backdrop-blur-xl w-full max-w-2xl mb-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+                <!-- Email -->
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Email</div>
+                        <a href="mailto:Syeedasif35@gmail.com" class="text-white text-xs font-display font-semibold hover:text-cyan-400 transition-colors block truncate">Syeedasif35@gmail.com</a>
+                    </div>
+                </div>
+
+                <!-- WhatsApp -->
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                        <i data-lucide="message-square" class="w-5 h-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">WhatsApp</div>
+                        <a href="https://wa.me/918151991239" target="_blank" class="text-white text-xs font-display font-semibold hover:text-emerald-400 transition-colors block">+91 81519 91239</a>
+                    </div>
+                </div>
+
+                <!-- Instagram -->
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 shrink-0">
+                        <i data-lucide="instagram" class="w-5 h-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Instagram</div>
+                        <a href="https://www.instagram.com/vj_ashh?stkn=MWF1MGVseWQ4N29odQ==" target="_blank" class="text-white text-xs font-display font-semibold hover:text-pink-400 transition-colors block truncate">@vj_ashh</a>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="copyEmail()" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-dark-900 font-display font-bold text-sm tracking-wide shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 flex items-center space-x-2">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+                <span id="copy-btn-text">Copy Booking Email</span>
+            </button>
+        </section>
+
+    </main>
+
+    <footer class="fixed bottom-0 left-0 right-0 z-30 w-full px-6 md:px-8 py-3 max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center border-t border-slate-800/80 bg-dark-900/90 backdrop-blur-md gap-3">
+        <!-- Navigation Dots -->
+        <div id="dots-container" class="flex items-center space-x-2 overflow-x-auto py-1 max-w-full">
+            <!-- Dynamically populated by JS -->
+        </div>
+
+        <!-- Control Buttons & Counter -->
+        <div class="flex items-center space-x-4">
+            <div id="slide-counter-bottom" class="text-xs text-slate-400 font-medium sm:hidden">Slide 1 of 7</div>
+            <div class="flex items-center space-x-2">
+                <button onclick="prevSlide()" class="p-2.5 rounded-xl bg-dark-800 hover:bg-dark-700 border border-slate-700/80 text-slate-200 transition-colors disabled:opacity-40 disabled:pointer-events-none" id="prev-btn" title="Previous Slide (Left Arrow)">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                </button>
+                <button onclick="nextSlide()" class="p-2.5 rounded-xl bg-dark-800 hover:bg-dark-700 border border-slate-700/80 text-slate-200 transition-colors disabled:opacity-40 disabled:pointer-events-none" id="next-btn" title="Next Slide (Right Arrow)">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        let currentSlide = 1;
+        const totalSlides = 7;
+
+        function updateSlides() {
+            for (let i = 1; i <= totalSlides; i++) {
+                const slide = document.getElementById(`slide-${i}`);
+                if (i === currentSlide) {
+                    slide.classList.add('active');
+                    slide.scrollTop = 0;
+                } else {
+                    slide.classList.remove('active');
+                }
+            }
+
+            // Update Counters
+            document.getElementById('slide-counter-top').innerText = `Slide ${currentSlide} / ${totalSlides}`;
+            document.getElementById('slide-counter-bottom').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+
+            // Update Buttons
+            document.getElementById('prev-btn').disabled = currentSlide === 1;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides;
+
+            // Update Dots
+            const dots = document.querySelectorAll('.slide-dot');
+            dots.forEach((dot, index) => {
+                if (index + 1 === currentSlide) {
+                    dot.classList.add('bg-cyan-400', 'w-8');
+                    dot.classList.remove('bg-slate-700', 'w-2');
+                } else {
+                    dot.classList.remove('bg-cyan-400', 'w-8');
+                    dot.classList.add('bg-slate-700', 'w-2');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlides();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlides();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            if (slideNum >= 1 && slideNum <= totalSlides) {
+                currentSlide = slideNum;
+                updateSlides();
+            }
+        }
+
+        // Setup Navigation Dots
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 1; i <= totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.className = `h-2 rounded-full transition-all duration-300 slide-dot ${i === 1 ? 'bg-cyan-400 w-8' : 'bg-slate-700 w-2'}`;
+            dot.title = `Go to Slide ${i}`;
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Touch Swipe Navigation for Mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                nextSlide();
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                prevSlide();
+            }
+        }
+
+        // Copy email helper
+        function copyEmail() {
+            const email = "Syeedasif35@gmail.com";
+            const textArea = document.createElement("textarea");
+            textArea.value = email;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                const btnText = document.getElementById('copy-btn-text');
+                btnText.innerText = "Email Copied to Clipboard!";
+                setTimeout(() => {
+                    btnText.innerText = "Copy Booking Email";
+                }, 2500);
+            } catch (err) {
+                console.error('Failed to copy', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Interactive Canvas Particle & Glow Animation
+        const canvas = document.getElementById('gemini-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        const mouse = { x: null, y: null, radius: 150 };
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.6;
+                this.vy = (Math.random() - 0.5) * 0.6;
+                this.radius = Math.random() * 2 + 1;
+                this.baseAlpha = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                if (mouse.x !== null && mouse.y !== null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.radius) {
+                        let force = (mouse.radius - distance) / mouse.radius;
+                        this.x -= (dx / distance) * force * 2;
+                        this.y -= (dy / distance) * force * 2;
+                    }
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(34, 211, 238, ${this.baseAlpha})`;
+                ctx.fill();
+            }
+        }
+
+        function initparticles() {
+            particles = [];
+            let count = Math.floor((width * height) / 15000);
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        initparticles();
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(6, 182, 212, ${0.15 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+
+        animateCanvas();
+    </script>
+</body>
+</html>
